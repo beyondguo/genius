@@ -1,0 +1,31 @@
+# basic ignore:
+__pycache__/
+.idea/
+.ipynb_checkpoints/
+.DS_Store
+
+# wordvec weights
+weights/
+
+# model weights
+saved_models/
+
+# saved kws
+saved_words/
+saved_keywords/
+# data folder
+data/
+datasets/
+dataset/
+
+log/
+other_aug.py
+other_aug/
+examples/
+# temp files
+temp/
+Untitled.ipynb
+concat_augfile.py
+
+
+

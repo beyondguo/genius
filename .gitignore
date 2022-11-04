@@ -1,0 +1,78 @@
+# basic ignore:
+__pycache__/
+.idea/
+.ipynb_checkpoints/
+.DS_Store
+.vscode
+augmentation_tools/__pycache__
+
+# wordvec weights
+weights/
+
+# model weights
+saved_models/
+bert-finetuned-ner-100examples/
+bert-finetuned-squad/
+bert-log/
+saved_models_bert-finetuned-ner-100examples/
+bart-large-finetuned-amazon-en-es/
+wikipedia20220301en-paras-yake/
+wikipedia20220301en-paras-yake-tokenized/
+
+
+# saved kws
+saved_words/
+augmentation_tools/sta_saved_keywords
+
+
+# data folder
+data/
+datasets/
+dataset/
+clf_data/
+ner_data/
+qa_data/
+sm_data/
+saved_datasets/
+old_data_clf/
+data_clf/
+
+
+# exp scripts
+run_huff.sh
+run_bbc.sh
+run_yahoo.sh
+run_sst2.sh
+run_sst.sh
+run_sst2-l.sh
+run_imdb.sh
+run_20ng.sh
+occupy.py
+oc.sh
+run.sh
+run_clf.py
+
+# temp files
+temp/
+tmp/
+temp_files/
+oc/
+test/
+beyond/
+.vscode-upload.json
+counting_mask.ipynb
+.empty/
+dd_new.pkl
+dataset2_with_kws.pkl
+nohup.out
+other_aug
+.vscode-upload.json
+occupy.py
+squad_example.py
+
+# log
+log/
+clf-log/
+
+# 
+bert-base-cased/
