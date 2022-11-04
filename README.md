@@ -10,7 +10,7 @@
 - Paper: [coming soon](to_be_added)
 - Models hosted in 🤗 Huggingface: [sega-large](https://huggingface.co/beyond/sega-large)
 
-<img src="https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-hf-api.jpg" style="zoom:30%;" />
+<img src="https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-hf-api.jpg" width="50%" />
 
 **SEGA** is able to write complete paragraphs given a sketch (or framework), which can be composed of:
 - keywords /key-phrases, like [NLP | AI | computer science]
