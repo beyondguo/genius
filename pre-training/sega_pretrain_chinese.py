@@ -44,8 +44,10 @@ def preprocess_function(examples):
     model_inputs['labels'] = labels['input_ids']
     return model_inputs
 
-tokenized_dataset = dataset_with_sketch.map(preprocess_function, batched=True, 
-                                         batch_size=10000,num_proc=100)
+N = 10000000
+tokenized_dataset = dataset_with_sketch['train'].select(range(N)).map(preprocess_function, batched=True, 
+                                        remove_columns=dataset_with_sketch['train'].column_names,
+                                         batch_size=10000,num_proc=50)
 
 
 # ROUGE metric：
@@ -82,9 +84,9 @@ model_name = model_checkpoint.split("/")[-1]
 model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
 
 
-logging_steps = len(tokenized_dataset['train']) // batch_size
+logging_steps = len(tokenized_dataset) // batch_size
 
-output_dir = f"../saved_models/{model_name}-{dataset_name}"
+output_dir = f"../saved_models/{model_name}-{dataset_name}-{N}"
 
 training_args = Seq2SeqTrainingArguments(
     output_dir=output_dir,
@@ -108,14 +110,14 @@ data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 # temp_evaluation_dataset = tokenized_dataset.select(range(2000))
 
 # remove训练中不需要的column
-train_dataset = tokenized_dataset["train"].remove_columns(dataset_with_sketch["train"].column_names)
-val_dataset = train_dataset.select(range(10000))
+# train_dataset = tokenized_dataset["train"].remove_columns(dataset_with_sketch["train"].column_names)
+val_dataset = tokenized_dataset.select(range(10000))
 
 trainer = Seq2SeqTrainer(
     model,
     training_args,
-    train_dataset=tokenized_dataset["train"],
-    eval_dataset=tokenized_dataset["validation"], 
+    train_dataset=tokenized_dataset,
+    eval_dataset=val_dataset, 
     data_collator=data_collator,
     tokenizer=tokenizer,
     compute_metrics=compute_metrics,

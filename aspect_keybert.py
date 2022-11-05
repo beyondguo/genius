@@ -61,13 +61,12 @@ class AspectKeyBERT(KeyBERT):
                     count = vectorizer.fit([doc])
                 else:
                     """
-                    这个CountVectorizer还是挺傻逼的，各种小问题，让我不得不搞很多workaround
+                    这个CountVectorizer一言难尽，各种小问题，让我不得不搞很多workaround
                     `lowercase=False` 是防止词被小写了，然后对应不回去了
                     `tokenizer=word_tokenize, token_pattern=None` 是为了防止标点和一些小词被吃了，导致phrase对应不回去
-                    但这样处理之后，KeyBERT傻逼的地方又来了，
+                    但这样处理之后，KeyBERT又有些问题，
                     抽出来的很多n-gram会带标点，比方设置range为(2,3)的时候，`. nice day`和`nice day`很容易都被抽出来，因为相似度很接近。
                     这样搞得我在通过re.finditer去对应位置的时候，还得处理各种标点的转换问题。（其实还是CountVectorizer切分n-gram的时候太粗糙了）
-
                     """
                     count = CountVectorizer(
                         ngram_range=keyphrase_ngram_range, lowercase=False, tokenizer=word_tokenize, token_pattern=None

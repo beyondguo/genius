@@ -51,7 +51,7 @@ if args.sega_model_path is not None:
 else:
     checkpoint = '../saved_models/bart-base-c4-realnewslike-4templates-passage-and-sent-max15sents_2-sketch4/checkpoint-215625'
 print('sega checkpoint:', checkpoint)
-sega = pipeline('text2text-generation', model=checkpoint, device=args.device)
+sega = pipeline('text2text-generation', model=checkpoint, device=args.device, framework='pt')
 
 
 sketcher = SketchExtractor(model='bert')
