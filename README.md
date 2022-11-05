@@ -8,15 +8,23 @@
 ![sega-illustration](https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-main-illustration.png)
 
 - Paper: [coming soon](to_be_added)
-- Models hosted in 🤗 Huggingface: [sega-large](https://huggingface.co/beyond/sega-large)
+
+- Models hosted in 🤗 Huggingface:
+
+| Model | #params | Language |
+|------------------------|--------------------------------|-------|
+| [`sega-large`(paper version)](https://huggingface.co/beyond/sega-large) | xM   | English |
+| [`sega-base`(coming soon)]()  | xM    | English |
+| [`sega-large-chinese`(coming soon)]() | xM    |  Chinese |
+| [`sega-base-chinese`(New!)](https://huggingface.co/beyond/sega-base-chinese) | xM    | Chinese |
 
 <img src="https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-hf-api.jpg" width="50%" />
 
 **SEGA** is able to write complete paragraphs given a sketch (or framework), which can be composed of:
-- keywords /key-phrases, like [NLP | AI | computer science]
-- spans, like [Conference on Empirical Methods | submission of research papers]
-- sentences, like [I really like machine learning | I work at Google since last year]
-- all mixup~
+- keywords /key-phrases, like "––NLP––AI––computer––science––"
+- spans, like "Conference on Empirical Methods––submission of research papers––"
+- sentences, like "I really like machine learning––I work at Google since last year––"
+- or mixup~
 
 ### How to use
 ```python
@@ -34,17 +42,7 @@ Output:
 'The Conference on Empirical Methods welcomes the submission of research papers. Abstracts should be in the form of a paper or presentation. Please submit abstracts to the following email address: eemml.stanford.edu. The conference will be held at Stanford University on April 1618, 2019. The theme of the conference is Deep Learning.'
 ```
 
-## Model variations
 
-
-| Model | #params | Language |
-|------------------------|--------------------------------|-------|
-| [`sega-large`]() | xM   | English |
-| [`sega-base`(coming soon)]()  | xM    | English |
-| [`sega-small`(coming soon)]()        | xM    | English |
-| [`sega-large-chinese`(coming soon)]() | xM    |  Chinese |
-| [`sega-base-chinese`(coming soon)]() | xM    | Chinese |
-| [`sega-small-chinese`(coming soon)]() | xM | Chinese |
 
 
 ## Data Augmentation for Text Classification Tasks:
