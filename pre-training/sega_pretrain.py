@@ -9,13 +9,13 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, DataCollatorF
 from datasets import load_dataset, load_metric
 import argparse
 parser = argparse.ArgumentParser(allow_abbrev=False)
-parser.add_argument('--sketch_type', type=str, default=None, help='1,2,3 or 4. Details see pre-training/prepare_sega_pretrain_data.py')
+parser.add_argument('--sketch_type', type=str, default=4, help='1,2,3 or 4. Details see pre-training/prepare_sega_pretrain_data.py')
 args = parser.parse_args()
 
 
 
 # pretrained checkpoint:
-model_checkpoint = 'facebook/bart-large'  
+model_checkpoint = 'facebook/bart-base'  
 tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
 
@@ -25,7 +25,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
 # load the preprocessed dataset with the four kinds of sketches
 from datasets import load_from_disk
-dataset_path = '../saved_datasets/c4-realnewslike-4templates-passage-and-sent-max15sents_2' 
+dataset_path = '../saved_datasets/c4-realnewslike-4templates-passage-max15sents_2' 
 dataset_name = dataset_path.split('/')[-1]
 dataset_with_sketch = load_from_disk(dataset_path)
 print(dataset_with_sketch)
@@ -131,7 +131,7 @@ trainer.train(resume_from_checkpoint = False)
 # trainer.save_model(save_path)
 
 # -----------------------------
-import os
+# import os
 # os.system("cd ..")
 # os.system("sh oc.sh")
-os.system("python /mnt/data/occupy.py")
+# os.system("python /mnt/data/occupy.py")

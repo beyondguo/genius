@@ -9,8 +9,9 @@
 # python conditional_mlm_clf.py --dataset_name sst2_100 --mlm_model_path ../saved_models/c-mlm/sst2_50_roberta-large --n_aug 4
 # python conditional_clm_clf.py --dataset_name sst2_50 --clm_model_path ../saved_models/c-clm/sst2_50_gpt2 --n_aug 4
 
-CUDA_VISIBLE_DEVICES=0
-for dataset_name in 5huffpost_50 5huffpost_100 5huffpost_200 5huffpost_500 5huffpost_1000; do
+CUDA_VISIBLE_DEVICES=3
+# 5huffpost_100 5huffpost_200 5huffpost_500 5huffpost_1000
+for dataset_name in 5huffpost_1000; do
     # # EDA:
     # python eda_clf.py --dataset_name $dataset_name --method mix --simdict wordnet --p 0.1 --n_aug 1
 
@@ -35,12 +36,21 @@ for dataset_name in 5huffpost_50 5huffpost_100 5huffpost_200 5huffpost_500 5huff
     # python conditional_clm_clf.py --dataset_name $dataset_name --clm_model_path ../saved_models/c-clm/${dataset_name}_gpt2 --n_aug 1
 
     # SEGA
-    # python sega_clf.py \
-    #     --dataset_name $dataset_name \
-    #     --sega_model_path ../saved_models/bart-large-c4-l_50_200-d_13799838-yake_mask-t_3900800/checkpoint-152375 \
-    #     --template 4 \
-    #     --sega_version sega-old \
-    #     --n_aug 4 \
+    python sega_clf.py \
+        --dataset_name $dataset_name \
+        --sega_model_path beyond/sega-large \
+        --template 4 \
+        --sega_version sega-old-aspect_only \
+        --aspect_only \
+        --n_aug 4 \
+
+    python sega_clf.py \
+        --dataset_name $dataset_name \
+        --sega_model_path beyond/sega-large \
+        --template 4 \
+        --sega_version sega-old-no_aspect \
+        --no_aspect \
+        --n_aug 4 \
 
     # python sega_clf.py \
     #     --dataset_name $dataset_name \
@@ -84,13 +94,13 @@ for dataset_name in 5huffpost_50 5huffpost_100 5huffpost_200 5huffpost_500 5huff
     #     --n_aug 4 
 
     # directly use BART, no finetuning
-    python sega_clf.py \
-        --dataset_name $dataset_name \
-        --sega_model_path facebook/bart-large \
-        --template 4 \
-        --sega_version poor-bart \
-        --add_prompt \
-        --n_aug 4 
+    # python sega_clf.py \
+    #     --dataset_name $dataset_name \
+    #     --sega_model_path facebook/bart-large \
+    #     --template 4 \
+    #     --sega_version poor-bart \
+    #     --add_prompt \
+    #     --n_aug 4 
 done
 
 

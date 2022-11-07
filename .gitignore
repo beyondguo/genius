@@ -51,7 +51,7 @@ occupy.py
 oc.sh
 run.sh
 run_clf.py
-
+augmentation_tools/run_aug.sh
 # temp files
 temp/
 tmp/

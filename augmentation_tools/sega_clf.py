@@ -25,8 +25,9 @@ parser.add_argument('--sega_model_path', type=str, default=None, help='sega mode
 parser.add_argument('--template', type=int, help='1,2,3,4')
 parser.add_argument('--max_ngram', type=int,default=3, help='3 for normal passages. If the text is too short, can be set smaller')
 parser.add_argument('--aspect_only', action='store_true',default=False, help='')
+parser.add_argument('--no_aspect', action='store_true',default=False, help='')
 parser.add_argument('--max_length', type=int, default=200, help='')
-parser.add_argument('--add_prompt', action='store_true', default=False, help='if set, will prepend label prefix to sketches')
+parser.add_argument('--add_prompt', action='store_true', default=True, help='if set, will prepend label prefix to sketches')
 parser.add_argument('--n_aug', type=int, default=1, help='how many times to augment')
 parser.add_argument('--sega_version', type=str, help='to custom output filename')
 parser.add_argument('--device', type=int, default=0, help='cuda device index, if not found, will switch to cpu')
@@ -74,7 +75,7 @@ for content, label in zip(tqdm(contents), labels):
     prompt = ''
     if args.add_prompt:
         prompt = label2desc[label]+': '
-    aspect_keywords = label2desc[label].split(' ')
+    aspect_keywords = None if args.no_aspect else label2desc[label].split(' ')
     topk = my_topk(content)
     kws = sketcher.get_kws(
         content, max_ngram=args.max_ngram,top=topk, 
