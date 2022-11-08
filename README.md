@@ -11,12 +11,15 @@
 
 - Models hosted in 🤗 Huggingface:
 
-| Model | #params | Language |
-|------------------------|--------------------------------|-------|
-| [`sega-large`(paper version)](https://huggingface.co/beyond/sega-large) | xM   | English |
-| [`sega-base`(coming soon)]()  | xM    | English |
-| [`sega-large-chinese`(coming soon)]() | xM    |  Chinese |
-| [`sega-base-chinese`(New!)](https://huggingface.co/beyond/sega-base-chinese) | xM    | Chinese |
+**Model variations:**
+
+| Model | #params | Language | comment|
+|------------------------|--------------------------------|-------|---------|
+| [`sega-large`](https://huggingface.co/beyond/sega-large) | 406M   | English | The version used in paper |
+| [`sega-large-k2t`](https://huggingface.co/beyond/sega-large-k2t)  | 406M    | English | keywords-to-text |
+| [`sega-base`](https://huggingface.co/beyond/sega-base)  | 139M    | English | smaller version |
+| [`sega-base-ps`](https://huggingface.co/beyond/sega-base)  | 139M    | English | pre-trained both in paragraphs and short sentences |
+| [`sega-base-chinese`](https://huggingface.co/beyond/sega-base-chinese) | 116M    | 中文 | 在一千万纯净中文段落上预训练|
 
 <img src="https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-hf-api.jpg" width="50%" />
 
@@ -26,14 +29,16 @@
 - sentences, like "I really like machine learning––I work at Google since last year––"
 - or mixup~
 
+
 ### How to use
+#### 1. If you want to generate sentences given a **sketch**
 ```python
 from transformers import pipeline
 # 1. load the model with the huggingface `pipeline`
 sega = pipeline("text2text-generation", model='beyond/sega-large', device=0)
 # 2. provide a sketch (joint by <mask> tokens)
 sketch = "<mask> Conference on Empirical Methods <mask> submission of research papers <mask> Deep Learning <mask>"
-# 3. Do generation!
+# 3. just do it!
 generated_text = sega(sketch, num_beams=3, do_sample=True, max_length=200)[0]['generated_text']
 print(generated_text)
 ```
@@ -42,12 +47,17 @@ Output:
 'The Conference on Empirical Methods welcomes the submission of research papers. Abstracts should be in the form of a paper or presentation. Please submit abstracts to the following email address: eemml.stanford.edu. The conference will be held at Stanford University on April 1618, 2019. The theme of the conference is Deep Learning.'
 ```
 
+#### 2. If you want to do **data augmentation** to generate new training samples
+Please check [SEGA/augmentation_tools](https://github.com/beyondguo/SEGA/tree/master/augmentation_tools), where we provide ready-to-run scripts for data augmentation for text classification/NER/MRC tasks.
 
 
 
-## Data Augmentation for Text Classification Tasks:
+
+---
+
+## SEGA as A Strong Data Augmentation Tool:
 - Setting: Low-resource setting, where only n={50,100,200,500,1000} labeled samples are available for training. The below results are the average of all training sizes.
-- Datasets: [HuffPost](https://huggingface.co/datasets/khalidalt/HuffPost), [BBC](https://huggingface.co/datasets/SetFit/bbc-news), [SST2](https://huggingface.co/datasets/glue), [IMDB](https://huggingface.co/datasets/imdb), [Yahoo](https://huggingface.co/datasets/yahoo_answers_topics), [20NG](https://huggingface.co/datasets/newsgroup).
+- Text Classification Datasets: [HuffPost](https://huggingface.co/datasets/khalidalt/HuffPost), [BBC](https://huggingface.co/datasets/SetFit/bbc-news), [SST2](https://huggingface.co/datasets/glue), [IMDB](https://huggingface.co/datasets/imdb), [Yahoo](https://huggingface.co/datasets/yahoo_answers_topics), [20NG](https://huggingface.co/datasets/newsgroup).
 - Base classifier: [DistilBERT](https://huggingface.co/distilbert-base-cased)
 
 
@@ -76,6 +86,7 @@ Out-of-distribution (OOD) evaluations:
 |     STA    |   69.31   |   64.82   |   74.72   |   73.62   |   70.61   |
 |  **SEGA**  |   74.87   |   66.85   |   76.02   |   74.76   |   73.13   |
 | **SEGA-f** | **76.18** |   66.89   | **77.45** | **80.36** | **75.22** |
+
 ### BibTeX entry and citation info
 TBD
 
