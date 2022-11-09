@@ -7,7 +7,7 @@
 
 ![sega-illustration](https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-main-illustration.png)
 
-- Paper: [coming soon](to_be_added)
+- Paper: [SEGA: SkEtch-based Generative Augmentation (preprint)](https://github.com/beyondguo/SEGA/blob/master/SEGA_gby_preprint.pdf)
 
 - Models hosted in 🤗 Huggingface:
 
