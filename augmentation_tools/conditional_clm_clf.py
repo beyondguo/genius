@@ -33,7 +33,7 @@ else:
 
 
 print(f'c-clm model: {args.clm_model_path}')
-generator = pipeline("text-generation", model=args.clm_model_path, framework='pt', device=0)
+generator = pipeline("text-generation", model=args.clm_model_path, framework='pt', device=args.device)
 tokenizer = generator.tokenizer
 
 new_contents = []

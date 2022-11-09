@@ -18,8 +18,9 @@ from ner_and_qa.s2t_utils import clean_pipeline, remove_special_characters, get_
 import random
 random.seed(5)
 
-# dataset_name = 'conll2003'
-dataset_name = 'wikiann'
+
+dataset_name = 'conll2003'
+# dataset_name = 'wikiann'
 raw_datasets = load_dataset(dataset_name,'en')
 
 
