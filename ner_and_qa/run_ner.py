@@ -32,8 +32,8 @@ else:
 
 
 # dataset
-dataset_name = 'wikiann'
-raw_datasets = load_dataset(dataset_name,'en')
+dataset_name = 'conll2003'
+raw_datasets = load_dataset(dataset_name)
 
 label_names = raw_datasets["train"].features["ner_tags"].feature.names
 id2label = {str(i): label for i, label in enumerate(label_names)}
@@ -119,9 +119,9 @@ tokenized_datasets = raw_datasets.map(
 )
 
 # adding the augmented dataset========================================================================================
-output_dir = 'saved_models/ner/base-500'
+output_dir = '../saved_models/ner/base-50'
 DO_SAVE = False
-num_train = 100
+num_train = 50
 TRAIN_AUG = True
 BLOCK_O = True
 BLOCK_P = 1
@@ -138,7 +138,7 @@ else:
 
 if TRAIN_AUG:
     # aug_file_name = 'ner_data/conll03-500-MELM.pkl' # other
-    aug_file_name = 'ner_data/wikiann-100-S2T-aug1_long.pkl' # k2t-frame
+    aug_file_name = '../ner_data/conll2003-50-sega-long-naug-4.pkl' # k2t-frame
     # -----------------
     # aug_file_name2 = 'ner_data/conll03-500-K2T-frame-aug1_long_v5_filtered_1.pkl' # k2t-frame
     # df1 = pd.read_pickle(aug_file_name1)
