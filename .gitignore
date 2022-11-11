@@ -1,3 +1,5 @@
+pre-training/
+pre-training-back/
 # basic ignore:
 __pycache__/
 .idea/

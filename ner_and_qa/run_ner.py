@@ -121,7 +121,7 @@ tokenized_datasets = raw_datasets.map(
 # adding the augmented dataset========================================================================================
 output_dir = '../saved_models/ner/base-50'
 DO_SAVE = False
-num_train = 50
+num_train = 100
 TRAIN_AUG = True
 BLOCK_O = True
 BLOCK_P = 1
@@ -137,8 +137,8 @@ else:
     train_dataset = tokenized_datasets["train"]
 
 if TRAIN_AUG:
-    # aug_file_name = 'ner_data/conll03-500-MELM.pkl' # other
-    aug_file_name = '../ner_data/conll2003-50-sega-long-naug-4.pkl' # k2t-frame
+    # aug_file_name = '../ner_data/conll03-50-simple_rm.pkl' # mention replace
+    aug_file_name = '../ner_data/conll2003-100-sega-short-naug-1.pkl' # k2t-frame
     # -----------------
     # aug_file_name2 = 'ner_data/conll03-500-K2T-frame-aug1_long_v5_filtered_1.pkl' # k2t-frame
     # df1 = pd.read_pickle(aug_file_name1)

@@ -1,4 +1,4 @@
-from datasets import load_dataset, Dataset
+from datasets import load_dataset
 import warnings
 warnings.filterwarnings('ignore')
 from tqdm import tqdm
@@ -11,10 +11,11 @@ from transformers import pipeline
 from collections import defaultdict
 import random
 random.seed(5)
-
+import sys
+sys.path.append('../')
 from sega_utils import SketchExtractor, List2Dataset
 
-from tqdm import tqdm
+
 import argparse
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('--dataset_name', type=str, default='conll2003', help='dataset name in HF')
@@ -127,14 +128,13 @@ class MyTagger:
 
 
 
-sketch_extractor = SketchExtractor('bert')
+sketch_extractor = SketchExtractor('yake')
 
 exp_data = raw_dataset['train'].select(range(args.train_size))
 
 longer_data = concat_multiple_sequences(exp_data) # dict_keys(['tokens', 'ner_tags'])
 
 # extract_mentions(longer_data['tokens'][0],longer_data['ner_tags'][0])
-
 
 
 
@@ -161,37 +161,64 @@ my_tagger = MyTagger(global_mention_dict)
 sketches = []
 for tokens, tags in zip(tqdm(longer_data['tokens']), longer_data['ner_tags']):
     text = ' '.join(tokens)
+    #
+    _, kws = sketch_extractor.get_kws(text, max_ngram=3, top=max(len(tokens)//8,5))
     mentions, _ = extract_mentions(tokens, tags)
-    sketch = sketch_extractor.get_sketch(
-        text, aspect_keywords=mentions, 
-        max_ngram=3, top=max(len(tokens)//4,5)
-        )
+    sketch = sketch_extractor.get_sketch_from_kws(text, kws+mentions)
+    # mentions, _ = extract_mentions(tokens, tags)
+    # sketch = sketch_extractor.get_sketch(
+    #     text, aspect_keywords=mentions, 
+    #     max_ngram=3, top=max(len(tokens)//4,5)
+    #     )
     sketches.append(sketch)
 
 sketch_dataset = List2Dataset(sketches)
 
-
-sega = pipeline('text2text-generation',model='beyond/sega-base-ps')
+sega = pipeline('text2text-generation',model='beyond/sega-base',device=0)
 
 
 ## sega generating
-orig_augmented_dataset = defaultdict(list)
-args.n_aug = 4
+long_augmented_dataset = defaultdict(list)
+short_augmented_dataset = defaultdict(list)
+
 for i in range(args.n_aug):
     for out in tqdm(sega(sketch_dataset, num_beams=3, do_sample=True, max_length=100, batch_size=32)):
         generated_text = out[0]['generated_text']
-        print(f'  >>> generated_text: {generated_text}')
+        # print(f'  >>> generated_text: {generated_text}')
         # tag the generated sentence
         new_tokens, new_tags = my_tagger.tag(generated_text)
-        orig_augmented_dataset['tokens'].append(new_tokens)
-        orig_augmented_dataset['ner_tags'].append(new_tags)
-print(f'>>> Num of originally generated examples: {len(orig_augmented_dataset["tokens"])}')
+        long_augmented_dataset['tokens'].append(new_tokens)
+        long_augmented_dataset['ner_tags'].append(new_tags)
+        # shorter sequences:
+        sents = sent_tokenize(generated_text)
+        for sent in sents:
+            if len(sent.split(' ')) <= 3:
+                continue
+            new_tokens, new_tags = my_tagger.tag(sent)
+            short_augmented_dataset['tokens'].append(new_tokens)
+            short_augmented_dataset['ner_tags'].append(new_tags)
+print(f'>>> Num of long generated examples: {len(long_augmented_dataset["tokens"])}')
+print(f'>>> Num of short generated examples: {len(short_augmented_dataset["tokens"])}')
 
 
-augmented_dataset = orig_augmented_dataset
-# 保存数据集
-df = pd.DataFrame(augmented_dataset)
+# Simple Filtering: 并进行一些简单过滤
+print(f'filtering too short seqs...')
+tokens_list = []
+tags_list = []
+for tokens,tags in zip(short_augmented_dataset['tokens'], short_augmented_dataset['ner_tags']):
+    if len(list(set(tags))) > 1 and len(tags) > 5: # 只保留至少一个实体的,且词数大于5
+        tokens_list.append(tokens)
+        tags_list.append(tags)
 
-file_name = f'ner_data/{args.dataset_name}-{args.train_size}-sega-long-naug-{args.n_aug}.pkl'
+short_augmented_dataset = {'tokens':tokens_list, 'ner_tags':tags_list}
+print(f'>>> Num of filtered short examples: {len(short_augmented_dataset["tokens"])}')
+
+
+df = pd.DataFrame(long_augmented_dataset)
+file_name = f'../ner_data/{args.dataset_name}-{args.train_size}-sega-long-naug-{args.n_aug}.pkl'
+df.to_pickle(file_name)  # 不能保存csv，因为涉及到保存list，csv会变成string了
+print(file_name)
+df = pd.DataFrame(short_augmented_dataset)
+file_name = f'../ner_data/{args.dataset_name}-{args.train_size}-sega-short-naug-{args.n_aug}.pkl'
 df.to_pickle(file_name)  # 不能保存csv，因为涉及到保存list，csv会变成string了
 print(file_name)
