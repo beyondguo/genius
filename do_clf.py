@@ -30,6 +30,7 @@ parser.add_argument('--test_file', type=str, default='test', help='test filename
 parser.add_argument('--more_test_files', type=str, default=None, help='test filename, name before .csv, join by ","')
 # 其他：
 parser.add_argument('--maxlen', type=int, default=512, help='max length of the sequence')
+parser.add_argument('--lr', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--train_bz', type=int, default=32, help='train batch size')
 parser.add_argument('--eval_bz', type=int, default=32, help='evaluation batch size')
 parser.add_argument('--metric', type=str, default='loss', help='metric for early-stopping, "loss" or "accuracy", usually "loss" will train longer')
@@ -141,7 +142,7 @@ for i in range(args.num_iter):
 
     model = init_model()
     model.to(device)
-    optimizer = AdamW(model.parameters(), lr=5e-5)
+    optimizer = AdamW(model.parameters(), lr=args.lr)
 
     t1 = time.time()
     best_val_acc = 0.

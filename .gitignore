@@ -1,5 +1,7 @@
 pre-training/
 pre-training-back/
+other_gen/
+
 # basic ignore:
 __pycache__/
 .idea/
@@ -81,3 +83,12 @@ bert-base-cased/
 
 
 playground.ipynb
+
+
+
+# NLG evaluation
+other_nlg/
+other_gen/
+other_aug/
+nlg_eval.ipynb
+nlg_eval/

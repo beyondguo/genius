@@ -29,6 +29,10 @@ def get_dataloader(file_path, tokenizer, label2idx, maxlen, bsz, collate_fn, shu
     dataloader = DataLoader(dataset, batch_size=bsz, collate_fn=collate_fn, shuffle=shuffle)
     return dataloader
 
+def get_dataloader_from_list(texts, labels, tokenizer, label2idx, maxlen, bsz, collate_fn, shuffle=True):
+    dataset = MyDataset(tokenizer, texts, labels, label2idx, maxlen)
+    dataloader = DataLoader(dataset, batch_size=bsz, collate_fn=collate_fn, shuffle=shuffle)
+    return dataloader
 
 class MyDataloaders:
     """

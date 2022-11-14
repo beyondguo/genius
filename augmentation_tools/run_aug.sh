@@ -11,7 +11,7 @@
 
 CUDA_VISIBLE_DEVICES=3
 # 5huffpost_100 5huffpost_200 5huffpost_500 5huffpost_1000
-for dataset_name in 5huffpost_1000; do
+for dataset_name in 5huffpost_1000 5huffpost_500 5huffpost_200 5huffpost_100 5huffpost_50; do
     # # EDA:
     # python eda_clf.py --dataset_name $dataset_name --method mix --simdict wordnet --p 0.1 --n_aug 1
 
@@ -36,21 +36,21 @@ for dataset_name in 5huffpost_1000; do
     # python conditional_clm_clf.py --dataset_name $dataset_name --clm_model_path ../saved_models/c-clm/${dataset_name}_gpt2 --n_aug 1
 
     # SEGA
-    python sega_clf.py \
-        --dataset_name $dataset_name \
-        --sega_model_path beyond/sega-large \
-        --template 4 \
-        --sega_version sega-old-aspect_only \
-        --aspect_only \
-        --n_aug 4 \
+    # python sega_clf.py \
+    #     --dataset_name $dataset_name \
+    #     --sega_model_path beyond/sega-large \
+    #     --template 4 \
+    #     --sega_version sega-old-aspect_only \
+    #     --aspect_only \
+    #     --n_aug 4 \
 
-    python sega_clf.py \
-        --dataset_name $dataset_name \
-        --sega_model_path beyond/sega-large \
-        --template 4 \
-        --sega_version sega-old-no_aspect \
-        --no_aspect \
-        --n_aug 4 \
+    # python sega_clf.py \
+    #     --dataset_name $dataset_name \
+    #     --sega_model_path beyond/sega-large \
+    #     --template 4 \
+    #     --sega_version sega-old-no_aspect \
+    #     --no_aspect \
+    #     --n_aug 4 \
 
     # python sega_clf.py \
     #     --dataset_name $dataset_name \
@@ -85,22 +85,22 @@ for dataset_name in 5huffpost_1000; do
     #     --num_train_epochs 10 \
     #     --batch_size 16
 
-    # python sega_clf.py \
-    #     --dataset_name $dataset_name \
-    #     --sega_model_path ../saved_models/sega_finetuned_for_${dataset_name}_orig_bart \
-    #     --template 4 \
-    #     --sega_version bart-fine \
-    #     --add_prompt \
-    #     --n_aug 4 
+    python sega_clf.py \
+        --dataset_name $dataset_name \
+        --sega_model_path ../saved_models/sega_finetuned_for_${dataset_name}_orig_bart \
+        --template 4 \
+        --sega_version bart-fine \
+        --add_prompt \
+        --n_aug 4 
 
     # directly use BART, no finetuning
-    # python sega_clf.py \
-    #     --dataset_name $dataset_name \
-    #     --sega_model_path facebook/bart-large \
-    #     --template 4 \
-    #     --sega_version poor-bart \
-    #     --add_prompt \
-    #     --n_aug 4 
+    python sega_clf.py \
+        --dataset_name $dataset_name \
+        --sega_model_path facebook/bart-large \
+        --template 4 \
+        --sega_version poor-bart \
+        --add_prompt \
+        --n_aug 4 
 done
 
 

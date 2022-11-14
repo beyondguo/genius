@@ -50,7 +50,7 @@ print(label2desc)
 if args.sega_model_path is not None:
     checkpoint = args.sega_model_path
 else:
-    checkpoint = '../saved_models/bart-base-c4-realnewslike-4templates-passage-and-sent-max15sents_2-sketch4/checkpoint-215625'
+    checkpoint = ''
 print('sega checkpoint:', checkpoint)
 sega = pipeline('text2text-generation', model=checkpoint, device=args.device, framework='pt')
 
@@ -66,7 +66,7 @@ sketcher.get_sketch(s, max_ngram=3, top=20, aspect_keywords=aspect_keywords, use
 def my_topk(text):
     l = len(text.split(' ')) # 使用空格简易分词俩统计长度
     # 一般为1/5的词，最少1个词，最多40个词
-    return min(max(l//2, 1),40)
+    return min(max(l//5, 1),40)
 
 print('Extracting sketches...')
 stopwords = get_stopwords()
