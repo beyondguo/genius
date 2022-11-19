@@ -62,7 +62,7 @@ for context, question, aa in zip(tqdm(augmented_dataset['context']),augmented_da
 print('>>>After filtering: ',len(filtered_augmented_dataset['context']))
 
 
-# 保存
+# save
 df_filter = pd.DataFrame(filtered_augmented_dataset)
 print(len(df_filter))
 df_filter.to_pickle(f'qa_data/squad_first{N_TRAIN}_aug{N_AUG}_v{v}_filtered.pkl')

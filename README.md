@@ -1,15 +1,31 @@
-# GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation
+# 💡GENIUS: Generating text using sketches as input 
 
-**基于草稿的生成模型**
+**基于草稿的文本生成模型**
 
-**GENIUS** is a powerful conditional text generation model using sketches as input, which can fill in the missing contexts for a given **sketch** (key information consisting of textual spans, phrases, or words, concatenated by mask tokens). GENIUS uses an encoder-decoder structure (based on the BART architecture) and is pre-trained on the `C4-realnewslike` corpus. 
+- Paper: [GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation](https://github.com/beyondguo/genius/blob/master/GENIUS_gby_arxiv.pdf)
 
-**GENIUS** can also be used as a **general textual data augmentation tool** for **various NLP tasks** (including sentiment analysis, topic classification, NER, and QA). 
+💡**GENIUS** is a powerful conditional text generation model using sketches as input, which can fill in the missing contexts for a given **sketch** (key information consisting of textual spans, phrases, or words, concatenated by mask tokens). GENIUS is pre-trained on a large- scale textual corpus with a novel *reconstruction from sketch* objective using an *extreme and selective masking* strategy, enabling it to generate diverse and high-quality texts given sketches.
+
+**Example 1:**
+
+- sketch: `__machine learning__my research interest__data science__`
+- BART: `The machine learning aspect of my research interest in data science.`
+- **GENIUS**: `I am a Ph.D. student in machine learning, and my research interest is in data science. I am interested in understanding how humans and machines interact and how we can improve the quality of life for people around the world.`
+
+**Example 2:**
+
+- sketch: `自然语言处理__谷歌__通用人工智能__`
+- BART: `自然语言处理是谷歌的通用人工智能技术`
+- **GENIUS**: `自然语言处理是谷歌在通用人工智能领域的一个重要研究方向，其目的是为了促进人类智能的发展。 `
 
 
-![genius-illustration](https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/what-is-genius.png)
 
-- Paper: [genius: SkEtch-based Generative Augmentation (preprint)](https://github.com/beyondguo/SEGA/blob/master/SEGA_gby_preprint.pdf)
+**GENIUS** can also be used as a general textual **data augmentation tool** for **various NLP tasks** (including sentiment analysis, topic classification, NER, and QA). 
+
+
+![image-20221119164544165](https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/hi-genius.png)
+
+
 
 - Models hosted in 🤗 Huggingface:
 
@@ -25,22 +41,29 @@
 
 <img src="https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-hf-api.jpg" width="50%" />
 
-**GENIUS** is able to write complete paragraphs given a sketch (or framework), which can be composed of:
-- keywords /key-phrases, like "––NLP––AI––computer––science––"
-- spans, like "Conference on Empirical Methods––submission of research papers––"
-- sentences, like "I really like machine learning––I work at Google since last year––"
-- or mixup~
+## Usage
+
+### What is a sketch?
+
+First, what is a **sketch**? As defined in our paper, a sketch is "key information consisting of textual spans, phrases, or words, concatenated by mask tokens". It's like a draft or framework when you begin to write an article. With GENIUS model, you can input some key elements you want to mention in your wrinting, then the GENIUS model can generate cohrent text based on your sketch.
+
+The sketch which can be composed of:
+
+- keywords /key-phrases, like `__NLP__AI__computer__science__`
+- spans, like `Conference on Empirical Methods__submission of research papers__`
+- sentences, like `I really like machine learning__I work at Google since last year__`
+- or a mixup!
 
 
-### How to use
-#### 1. If you want to generate sentences given a **sketch**
+### How to use the model
+#### 1. If you already have a sketch in mind, and want to get a paragraph based on it...
 ```python
 from transformers import pipeline
 # 1. load the model with the huggingface `pipeline`
 genius = pipeline("text2text-generation", model='beyond/genius-large', device=0)
 # 2. provide a sketch (joint by <mask> tokens)
 sketch = "<mask> Conference on Empirical Methods <mask> submission of research papers <mask> Deep Learning <mask>"
-# 3. just do it!
+# 3. here we go!
 generated_text = genius(sketch, num_beams=3, do_sample=True, max_length=200)[0]['generated_text']
 print(generated_text)
 ```
@@ -49,15 +72,18 @@ Output:
 'The Conference on Empirical Methods welcomes the submission of research papers. Abstracts should be in the form of a paper or presentation. Please submit abstracts to the following email address: eemml.stanford.edu. The conference will be held at Stanford University on April 1618, 2019. The theme of the conference is Deep Learning.'
 ```
 
-#### 2. If you want to do **data augmentation** to generate new training samples
-Please check [genius/augmentation_tools](https://github.com/beyondguo/genius/tree/master/augmentation_tools), where we provide ready-to-run scripts for data augmentation for text classification/NER/MRC tasks.
+If you have a lot of sketches, you can batch-up your sketches to a Huggingface `Dataset` object, which can be much faster.
+
+TODO: we are also building a python package for more convenient use of GENIUS, which will be released in few weeks.
+
+#### 2. If you have an NLP dataset (e.g. classification) and want to do data augmentation to enlarge your dataset...
+
+Please check [genius/augmentation_clf](https://github.com/beyondguo/genius/tree/master/augmentation_clf) and [genius/augmentation_ner_qa](https://github.com/beyondguo/genius/tree/master/augmentation_ner_qa), where we provide ready-to-run scripts for data augmentation for text classification/NER/MRC tasks.
 
 
 
-
----
-
-## GENIUS as A Strong Data Augmentation Tool:
+## Augmentation Experiments:
+Data augmentation is an important application for natural language generation (NLG) models, which is also a valuable evaluation of whether the generated text can be used in real applications. 
 - Setting: Low-resource setting, where only n={50,100,200,500,1000} labeled samples are available for training. The below results are the average of all training sizes.
 - Text Classification Datasets: [HuffPost](https://huggingface.co/datasets/khalidalt/HuffPost), [BBC](https://huggingface.co/datasets/SetFit/bbc-news), [SST2](https://huggingface.co/datasets/glue), [IMDB](https://huggingface.co/datasets/imdb), [Yahoo](https://huggingface.co/datasets/yahoo_answers_topics), [20NG](https://huggingface.co/datasets/newsgroup).
 - Base classifier: [DistilBERT](https://huggingface.co/distilbert-base-cased)

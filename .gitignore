@@ -9,6 +9,8 @@ __pycache__/
 .DS_Store
 .vscode
 augmentation_tools/__pycache__
+augmentation_clf/sta_saved_keywords
+augmentation_clf/__pycache__
 
 # wordvec weights
 weights/

@@ -20,7 +20,7 @@ raw_datasets = load_dataset("squad")
 
 # genius model
 device = int(args.device)
-model = 'beyond/genius-base'
+model = 'beyond/genius-large'
 genius = pipeline("text2text-generation", model=model, device=device)
 
 
@@ -115,7 +115,7 @@ for context, question, answer_dict in zip(tqdm(contexts), questions, answer_dict
             # m_pre_context = mask_unimportant_parts(pre_context, kws)
             _, kws = sketch_extractor.get_kws(pre_context, aspect_keywords=[question], top=get_topk(pre_context))
             m_pre_context = sketch_extractor.get_sketch_from_kws(pre_context, kws)
-        else: # 没有上文，补一个mask
+        else: # no pre-context, add a mask
             m_pre_context = '<mask> '
 
         # find and mask post-context
@@ -125,7 +125,7 @@ for context, question, answer_dict in zip(tqdm(contexts), questions, answer_dict
             # m_post_context = mask_unimportant_parts(post_context, kws)
             _, kws = sketch_extractor.get_kws(post_context, aspect_keywords=[question], top=get_topk(post_context))
             m_post_context = sketch_extractor.get_sketch_from_kws(post_context, kws)
-        else: # 没有下文，补一个mask
+        else: # no post-context, add a mask
             m_post_context = ' <mask>'
 
         # concatenate into a new context, and determine the new answer start
@@ -149,8 +149,8 @@ for context, question, answer_dict in zip(tqdm(contexts), questions, answer_dict
 print('** Working Hard to Augment Your Dataset......')
 m_dataset = List2Dataset(m_contexts)
 generated_contexts = []
-for _ in range(N_AUG): # 增强多次
-    for out in tqdm(genius(m_dataset, num_beams=3, do_sample=True, max_length=200, length_penalty=2, batch_size=32,repetition_penalty=2.)): # 原来200, no repetition_penalty
+for _ in range(N_AUG): 
+    for out in tqdm(genius(m_dataset, num_beams=3, do_sample=True, max_length=200, length_penalty=2, batch_size=32,repetition_penalty=2.)): 
         generated_text = out[0]['generated_text']
         generated_contexts.append(generated_text)
 
@@ -161,19 +161,20 @@ for i, c, q, a_s, a in zip(range(len(m_answers*N_AUG)),generated_contexts, m_que
     try:
         a_s_idx = c.index(a_s) # index of the answer sentence
     except Exception as e:
-        # 一个严重的问题，原始的句子不一定会原封不动地输出，可能会有些微小变化
-        # 这样原来的answer sent就不一定找得到了，最好能用近似匹配，即重合率高于某阈值即可
+        # a problem using GENIUS is that the original input sentence may have small changes,
+        # resulting in the mismatch in output sequence
+        # therefore we calculate an overlap ratio to find the right sentence
         sents = sent_tokenize(c)
         for s in sents:
             words = word_tokenize(s)
             orig_words = word_tokenize(a_s)
             n = len([w for w in words if w in orig_words])
-            # 重合率达到0.6，且answer也在该句子中，说明这个句子就对应原始答案句
+            # overlap > 0.6 and the answer is also in the sentence, then this is the right sentence we want
             if n/len(words) > 0.6 and a in s: 
                 a_s = s
                 a_s_idx = c.index(a_s)
                 break
-    if a_s_idx > -1: # 确认找到了答案句子
+    if a_s_idx > -1: # we've got the right answer
         start = a_s_idx + a_s.index(a)
         assert c[start:start+len(a)] == a, '%s Answer Position Mismatch!'%i
 
