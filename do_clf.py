@@ -1,34 +1,27 @@
-"""
-TODO: set seed for dataloaders
-"""
 
-from collections import defaultdict
 import os
-import numpy as np
-import datetime
 import time
+import datetime
 from tqdm import tqdm
+import numpy as np
 import pandas as pd
-from collections import defaultdict
 import torch
 from torch.optim import AdamW
 import torch.nn.functional as F
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
-from transformers import DataCollatorWithPadding
-from my_dataset import get_dataloader
-from utils import OrderNamespace, fix_seed
-fix_seed(5)
+from collections import defaultdict
+from utils import OrderNamespace, fix_seed, get_dataloader
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, DataCollatorWithPadding
 import argparse
 parser = argparse.ArgumentParser(allow_abbrev=False)
 
-# 常用参数：
+# main params:
 parser.add_argument('--dataset', type=str, default='bbc_500', help='dataset dir name, in data/')
-parser.add_argument('--checkpoint', type=str, default='distilbert-base-cased', help='model checkpoint')
+parser.add_argument('--checkpoint', type=str, default='distilbert-base-cased', help='classification model checkpoint')
 parser.add_argument('--train_file', type=str, default='train', help='train filename, name before .csv')
 parser.add_argument('--dev_file', type=str, default='dev', help='dev filename, name before .csv')
 parser.add_argument('--test_file', type=str, default='test', help='test filename, name before .csv')
 parser.add_argument('--more_test_files', type=str, default=None, help='test filename, name before .csv, join by ","')
-# 其他：
+# other params:
 parser.add_argument('--maxlen', type=int, default=512, help='max length of the sequence')
 parser.add_argument('--lr', type=float, default=5e-5, help='learning rate')
 parser.add_argument('--train_bz', type=int, default=32, help='train batch size')
@@ -39,15 +32,14 @@ parser.add_argument('--patience', type=int, default=3, help='patience of early-s
 parser.add_argument('--no_early_stop', action='store_true', default=False, help='if set, will NOT use early-stopping')
 parser.add_argument('--comment', type=str, default='', help='extra comment, will be added to the log')
 parser.add_argument('--group_head', action='store_true', help='if used, is the first experiment of the group of exps')
-# 不重要：
 parser.add_argument('--epochs', type=int, default=100, help='max number of epochs')
 
 
-# 这里使用parse_known_args以及前面的allow_abbrev=False都是为了防止在交互式中出现问题
+# parse_known_args, allow_abbrev=False are to prevent potential problems in interactive mode
 args, unknown = parser.parse_known_args(args=None, namespace=OrderNamespace())
 
 
-args_str = ' '.join([o+'='+str(getattr(args, o)) for o in args.order]) # 按照我指定是顺序排列
+args_str = ' '.join([o+'='+str(getattr(args, o)) for o in args.order]) # ordering in specified order
 log_start_str = '\n==========================\n' if args.group_head else ''
 print(args_str)
 
@@ -57,7 +49,7 @@ if not os.path.exists(f'./{log_dir_name}/'):
 with open(f'{log_dir_name}/{args.dataset}.txt', 'a') as f:
     f.write(log_start_str+str(datetime.datetime.now()) + '|' + args.comment + '\n' + args_str + '\n')
 
-# 设置默认的预训练模型：
+
 checkpoint = args.checkpoint
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -93,12 +85,11 @@ if args.more_test_files:
 
 
 ########################################################################
-#                            功能函数、损失函数准备
+#                       util functions
 ########################################################################
 def init_model():
     model = AutoModelForSequenceClassification.from_pretrained(checkpoint, num_labels=len(unique_labels))
     return model
-
 
 def evaluate(logits, labels):
     preds = torch.argmax(logits, dim=-1).cpu().numpy()
@@ -114,19 +105,19 @@ def evaluate_from_dataloader(model, dataloader, disable_tqdm=True):
         with torch.no_grad():
             outputs = model(**batch)
             logits = outputs.logits
-            loss = outputs.loss  # 这是整个batch的平均loss
-        preds = torch.argmax(logits, dim=-1).cpu().numpy()  # 需要先转换到cpu上，才可以转成numpy格式
+            loss = outputs.loss  # average loss of the whole batch
+        preds = torch.argmax(logits, dim=-1).cpu().numpy()  # first to cpu, then to numpy format
         labels = batch['labels'].cpu().numpy()
         total += len(preds)
         right += (preds == labels).sum()
-        total_loss += loss.item() * len(preds)  # 由于是平均的loss，我想算整个数据集的loss就需要把全部loss都加起来
+        total_loss += loss.item() * len(preds)
     acc = right/total
     avg_loss = total_loss/total
     return {'accuracy': acc, 'loss': avg_loss}
 
 
 ########################################################################
-#                            training loop
+#                        training loop
 ########################################################################
 
 
@@ -135,7 +126,7 @@ val_acc_list = []
 more_test_res_dict = defaultdict(list)
 if not os.path.exists('saved_models/'):
     os.makedirs('saved_models/')
-# 跑多个seed然后平均
+# average of multiple seeds
 for i in range(args.num_iter):
     # Fix the random seeds
     fix_seed(i)
@@ -169,7 +160,7 @@ for i in range(args.num_iter):
         print('val_acc: %s , val_loss: %s'%(val_acc, val_loss))
         if not args.no_early_stop:
             if metric == 'accuracy':
-                is_better = val_acc > best_val_acc  # todo: 应该是>=更合理 ?
+                is_better = val_acc > best_val_acc  
             elif metric == 'loss':
                 is_better = val_loss < best_val_loss
             if is_better:
@@ -211,7 +202,7 @@ for i in range(args.num_iter):
                 print(file, more_test_res['accuracy'], file=f)
 
 
-# 跑完所有的迭代，总结并记录实验结果
+# recording the results
 with open(f'{log_dir_name}/{args.dataset}.txt', 'a') as f:
     avg_val_acc = sum(val_acc_list) / len(val_acc_list)
     val_acc_std = np.std(val_acc_list)

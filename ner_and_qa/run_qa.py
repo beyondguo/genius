@@ -229,7 +229,7 @@ def main():
     params_str = f'n_train_{data_args.n_train}'
     file_logger = logging.getLogger('qa_file_logger')
     file_logger.setLevel(logging.INFO)
-    file_handler = logging.FileHandler(f'log/{data_args.dataset_name}_{params_str}.txt')
+    file_handler = logging.FileHandler(f'../log/{data_args.dataset_name}_{params_str}.txt')
     file_handler.setLevel(logging.INFO)
     # formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
     # file_handler.setFormatter(formatter)
@@ -480,7 +480,7 @@ def main():
         if data_args.aug_file is not None: # 添加增强样本
             import pandas as pd
             from datasets import Dataset, concatenate_datasets
-            aug_file_path = f'qa_data/{data_args.aug_file}.pkl'
+            aug_file_path = f'../qa_data/{data_args.aug_file}.pkl'
             aug_df = pd.read_pickle(aug_file_path)
             print(f'>>>aug size: {len(aug_df)}')
             file_logger.info(f'Augment Size: {len(aug_df)}')

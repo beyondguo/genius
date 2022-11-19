@@ -10,11 +10,11 @@ CUDA_VISIBLE_DEVICES=1 python run_qa.py \
   --doc_stride 128 \
   --output_dir tmp/debug_squad1 \
   --overwrite_output_dir \
-  --num_train_epochs 60 \
-  --n_train 200 \
-  --aug_file squad_first200_aug3_BT \
+  --num_train_epochs 50 \
+  --n_train 50 \
+  --aug_file squad_first50_aug3_genius \
   --evaluation_strategy steps \
-  --eval_steps 2000 \
+  --eval_steps 200 \
   --report_to none
 
 

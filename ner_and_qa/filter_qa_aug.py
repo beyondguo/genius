@@ -6,21 +6,21 @@ from datasets import load_metric
 metric = load_metric("squad")
 
 """
-把输入搞成这种格式：
+format the input like this:
 {'id': '56be4db0acb8001400a502ec', 'prediction_text': 'Denver Broncos'}
 {'id': '56be4db0acb8001400a502ec', 'answers': {'text': ['Denver Broncos', 'Denver Broncos', 'Denver Broncos'], 'answer_start': [177, 177, 177]}}
-然后这么计算：
+then:
 metric.compute(predictions=predicted_answers, references=theoretical_answers)
 """
 
-# 加载需要筛选的数据集
+# load the dataset to be filtered
 import pandas as pd
 aug_file_path = f'qa_data/squad_first{N_TRAIN}_aug{N_AUG}_v{v}.pkl'
 aug_df = pd.read_pickle(aug_file_path)
 print(f'>>>Original aug size: {len(aug_df)}')
 augmented_dataset = {"context":list(aug_df['context']),"question":list(aug_df['question']),"answers":list(aug_df['answers'])}
 
-# 加载filter模型
+# load the filter model
 from transformers import pipeline
 filter_model_path = f'saved_models/squad1_{N_TRAIN}examples_baseline'
 # filter_model_path = f'saved_models/squad1_full_baseline'
@@ -45,9 +45,8 @@ for context, question, aa in zip(tqdm(augmented_dataset['context']),augmented_da
     augmented_answer = {'id':1,'answers':aa}
     res = metric.compute(predictions=[predicted_answer], references=[augmented_answer])
     exact_match, f1 = res['exact_match'], res['f1']
-#     print(res)
     
-    # 筛选条件
+    
     if exact_match == 0 or f1 == 0:
         print(res)
 #         print(f'>>> C:{context}')
