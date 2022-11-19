@@ -52,34 +52,34 @@ python conditional_clm_finetune.py --clm_model_path gpt2 --dataset_name sst2new_
 python conditional_clm_clf.py --dataset_name sst2new_50 --clm_model_path ../saved_models/c-clm/sst2new_50_gpt2
 ```
 
-SEGA (Sketch-based Generative Augmentation, Ours):
+GeniusAug (Sketch-based Generative Augmentation, Ours):
 ```shell
-python sega_clf.py \
+python genius_clf.py \
     --dataset_name ng_50 \
-    --sega_model_path ../saved_models/bart-base-c4-realnewslike-4templates-passage-and-sent-max15sents_2-sketch4/checkpoint-215625 \
+    --genius_model_path beyond/genius-large \
     --template 4 \
-    --sega_version sega-base-t4 \
+    --genius_version genius-base-t4 \
     --n_aug 4 \
     --add_prompt
 ```
 
-SEGA fine-tune on downstream datasets:
+GeniusAug fine-tune on downstream datasets:
 ```shell
-CUDA_VISIBLE_DEVICES=0 python sega_finetune.py \
+CUDA_VISIBLE_DEVICES=0 python genius_finetune.py \
     --dataset_name yahooA10k_200 \
-    --checkpoint ../saved_models/bart-large-c4-l_50_200-d_13799838-yake_mask-t_3900800/checkpoint-152375 \
+    --checkpoint beyond/genius-large \
     --max_num_sent 5 \
     --num_train_epochs 10 \
     --batch_size 16
 ```
 
-SEGA-mixup
+GeniusAug-mixup
 ```shell
-python sega_mixup_clf.py \
+python genius_mixup_clf.py \
     --dataset_name imdb_50 \
     --max_ngram 3 \
     --sketch_n_kws 15 \
     --extract_global_kws \
-    --sega_version sega-mixup \
+    --genius_version genius-mixup \
     --n_aug 4
 ```

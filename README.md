@@ -1,21 +1,19 @@
-# 💡GENIUS: Generating text using sketches as input 
+# 💡GENIUS – generating text using sketches!
 
 **基于草稿的文本生成模型**
 
-- Paper: [GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation](https://github.com/beyondguo/genius/blob/master/GENIUS_gby_arxiv.pdf)
+- **Paper: [GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation](https://github.com/beyondguo/genius/blob/master/GENIUS_gby_arxiv.pdf)**
 
 💡**GENIUS** is a powerful conditional text generation model using sketches as input, which can fill in the missing contexts for a given **sketch** (key information consisting of textual spans, phrases, or words, concatenated by mask tokens). GENIUS is pre-trained on a large- scale textual corpus with a novel *reconstruction from sketch* objective using an *extreme and selective masking* strategy, enabling it to generate diverse and high-quality texts given sketches.
 
 **Example 1:**
 
-- sketch: `__machine learning__my research interest__data science__`
-- BART: `The machine learning aspect of my research interest in data science.`
+- sketch: `__ machine learning __ my research interest __ data science __`
 - **GENIUS**: `I am a Ph.D. student in machine learning, and my research interest is in data science. I am interested in understanding how humans and machines interact and how we can improve the quality of life for people around the world.`
 
 **Example 2:**
 
 - sketch: `自然语言处理__谷歌__通用人工智能__`
-- BART: `自然语言处理是谷歌的通用人工智能技术`
 - **GENIUS**: `自然语言处理是谷歌在通用人工智能领域的一个重要研究方向，其目的是为了促进人类智能的发展。 `
 
 
@@ -33,13 +31,20 @@
 
 | Model | #params | Language | comment|
 |------------------------|--------------------------------|-------|---------|
-| [`genius-large`](https://huggingface.co/beyond/genius-large) | 406M   | English | The version used in paper |
+| [`genius-large`](https://huggingface.co/beyond/genius-large) | 406M   | English | The version used in **paper** (recommend) |
 | [`genius-large-k2t`](https://huggingface.co/beyond/genius-large-k2t)  | 406M    | English | keywords-to-text |
 | [`genius-base`](https://huggingface.co/beyond/genius-base)  | 139M    | English | smaller version |
 | [`genius-base-ps`](https://huggingface.co/beyond/genius-base)  | 139M    | English | pre-trained both in paragraphs and short sentences |
 | [`genius-base-chinese`](https://huggingface.co/beyond/genius-base-chinese) | 116M    | 中文 | 在一千万纯净中文段落上预训练|
 
-<img src="https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/sega-hf-api.jpg" width="50%" />
+![image-20221119191940969](https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/202211191919005.png)
+
+
+
+
+More Examples:
+
+![image-20221119184950762](https://cdn.jsdelivr.net/gh/beyondguo/mdnice_pictures/typora/202211191849815.png)
 
 ## Usage
 

@@ -1,18 +1,18 @@
 """
-SEGA Fine-tuning on target dataset
+GENIUS Fine-tuning on target dataset
 
-To make SEGA better suited for downstream tasks, we finetune the model with prompts.
+To make GENIUS better suited for downstream tasks, we finetune the model with prompts.
 
 - cut the original text into smaller chunks (less than 15 sentences)
 - extract the label-aware sketch from the chunk, and prepend the corresponding label prefix to the sketch
 - prepend the corresponding label prefix the each chunk
-- prompt + sketch --> SEGA --> prompt + content
+- prompt + sketch --> GENIUS --> prompt + content
 
 example script:
 CUDA_VISIBLE_DEVICES=0
-python sega_finetune.py \
+python genius_finetune.py \
     --dataset_name bbc_50 \
-    --checkpoint ../saved_models/bart-large-c4-l_50_200-d_13799838-yake_mask-t_3900800/checkpoint-152375 \
+    --checkpoint beyond/genius-large \
     --max_num_sent 15 \
     --num_train_epochs 10 \
     --batch_size 16
@@ -28,7 +28,7 @@ import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.tokenize import sent_tokenize
-from sega_utils import SketchExtractor, List2Dataset, setup_seed, get_stopwords
+from genius_utils import SketchExtractor, List2Dataset, setup_seed, get_stopwords
 from rouge_score import rouge_scorer
 from datasets import load_metric
 import pandas as pd
@@ -40,7 +40,7 @@ from collections import defaultdict
 import argparse
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('--dataset_name', type=str, default='bbc_50', help='dataset dir name')
-parser.add_argument('--checkpoint', type=str, default='', help='sega checkpoint')
+parser.add_argument('--checkpoint', type=str, default='', help='genius checkpoint')
 parser.add_argument('--aspect_only', action='store_true', default=False, help='')
 parser.add_argument('--template', type=int, default=4, help='')
 parser.add_argument('--num_train_epochs', type=int, default=10, help='train epochs')
@@ -164,7 +164,7 @@ def compute_metrics(eval_pred):
 ##################################################################
 
 
-output_dir = f"../saved_models/sega_finetuned_for_{args.dataset_name}{args.comment}"
+output_dir = f"../saved_models/genius_finetuned_for_{args.dataset_name}{args.comment}"
 
 training_args = Seq2SeqTrainingArguments(
     output_dir=output_dir,

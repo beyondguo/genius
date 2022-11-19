@@ -1,13 +1,13 @@
 """
-SEGA (Sketch-based Generative Augmentation) for Classification
+GeniusAug for Classification
 
 example script:
-python sega_clf.py \
+python genius_clf.py \
     --dataset_name imdb_50 \
-    --sega_model_path ../saved_models/bart-base-c4-realnewslike-4templates-passage-and-sent-max15sents_2-sketch4/checkpoint-215625 \
+    --genius_model_path beyond/genius-large \
     --template 4 \
     --add_prompt \
-    --sega_version sega-base-t4 \
+    --genius_version genius-base-t4 \
     --n_aug 2
 
 """
@@ -15,13 +15,13 @@ import sys
 sys.path.append('../')
 from transformers import pipeline
 import pandas as pd
-from sega_utils import SketchExtractor, List2Dataset, setup_seed, get_stopwords
+from genius_utils import SketchExtractor, List2Dataset, setup_seed, get_stopwords
 setup_seed(5)
 from tqdm import tqdm
 import argparse
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('--dataset_name', type=str, default='bbc_50', help='dataset dir name')
-parser.add_argument('--sega_model_path', type=str, default=None, help='sega model path')
+parser.add_argument('--genius_model_path', type=str, default=None, help='genius model path')
 parser.add_argument('--template', type=int, help='1,2,3,4')
 parser.add_argument('--max_ngram', type=int,default=3, help='3 for normal passages. If the text is too short, can be set smaller')
 parser.add_argument('--aspect_only', action='store_true',default=False, help='')
@@ -29,7 +29,7 @@ parser.add_argument('--no_aspect', action='store_true',default=False, help='')
 parser.add_argument('--max_length', type=int, default=200, help='')
 parser.add_argument('--add_prompt', action='store_true', default=True, help='if set, will prepend label prefix to sketches')
 parser.add_argument('--n_aug', type=int, default=1, help='how many times to augment')
-parser.add_argument('--sega_version', type=str, help='to custom output filename')
+parser.add_argument('--genius_version', type=str, help='to custom output filename')
 parser.add_argument('--device', type=int, default=0, help='cuda device index, if not found, will switch to cpu')
 args = parser.parse_args()
 
@@ -47,12 +47,12 @@ else:
     label2desc = {label:label for label in set(labels)}
 print(label2desc)
 
-if args.sega_model_path is not None:
-    checkpoint = args.sega_model_path
+if args.genius_model_path is not None:
+    checkpoint = args.genius_model_path
 else:
     checkpoint = ''
-print('sega checkpoint:', checkpoint)
-sega = pipeline('text2text-generation', model=checkpoint, device=args.device, framework='pt')
+print('genius checkpoint:', checkpoint)
+genius = pipeline('text2text-generation', model=checkpoint, device=args.device, framework='pt')
 
 
 sketcher = SketchExtractor(model='bert')
@@ -92,7 +92,7 @@ sketch_dataset = List2Dataset(sketches)
 print('Generating new samples...')
 new_contents = []
 for _ in range(args.n_aug):
-    for out in tqdm(sega(
+    for out in tqdm(genius(
             sketch_dataset, num_beams=3, do_sample=True, 
             num_return_sequences=1, max_length=args.max_length, 
             batch_size=50, truncation=True)):
@@ -111,7 +111,7 @@ augmented_labels = labels + new_labels
 corresponding_sketches = ['ORIGINAL-SAMPLE'] * len(labels) + all_sketches
 assert len(augmented_contents) == len(augmented_labels), 'wrong num'
 assert len(augmented_contents) == len(corresponding_sketches), 'wrong num'
-args.output_name = f"sega_prompt{args.add_prompt}_asonly_{args.aspect_only}_{args.sega_version}_aug{args.n_aug}"
+args.output_name = f"genius_prompt{args.add_prompt}_asonly_{args.aspect_only}_{args.genius_version}_aug{args.n_aug}"
 augmented_dataset = pd.DataFrame({'content':augmented_contents, 'sketch':corresponding_sketches, 'label':augmented_labels})
 augmented_dataset.to_csv(f'../data_clf/{args.dataset_name}/{args.output_name}.csv')
 

@@ -1,13 +1,13 @@
 """
-SEGA-mixup for Classification
+GeniusAug-mixup for Classification
 
 example script:
-python sega_mixup_clf.py \
+python genius_mixup_clf.py \
     --dataset_name imdb_50 \
     --max_ngram 3 \
     --sketch_n_kws 15 \
     --extract_global_kws \
-    --sega_version sega-mixup \
+    --genius_version genius-mixup \
     --n_aug 4
 
 """
@@ -17,13 +17,13 @@ from transformers import pipeline
 from collections import defaultdict
 import pandas as pd
 import random
-from sega_utils import SketchExtractor, List2Dataset, setup_seed, get_stopwords
+from genius_utils import SketchExtractor, List2Dataset, setup_seed, get_stopwords
 setup_seed(5)
 from tqdm import tqdm
 import argparse
 parser = argparse.ArgumentParser(allow_abbrev=False)
 parser.add_argument('--dataset_name', type=str, default='yahooA10k_50', help='dataset dir name')
-parser.add_argument('--sega_model_path', type=str, default=None, help='sega model path')
+parser.add_argument('--genius_model_path', type=str, default=None, help='genius model path')
 parser.add_argument('--template', type=int, default=4, help='1,2,3,4')
 parser.add_argument('--max_ngram', type=int,default=3, help='3 for normal passages. If the text is too short, can be set smaller')
 parser.add_argument('--sketch_n_kws', type=int,default=15, help='how many kewords to form the sketch')
@@ -32,7 +32,7 @@ parser.add_argument('--extract_global_kws', action='store_true', default=True, h
 parser.add_argument('--add_prompt', action='store_true', default=True, help='if set, will prepend label prefix to sketches')
 parser.add_argument('--max_length', type=int, default=200, help='')
 parser.add_argument('--n_aug', type=int, default=1, help='how many times to augment')
-parser.add_argument('--sega_version', type=str, default='sega-mixup', help='to custom output filename')
+parser.add_argument('--genius_version', type=str, default='genius-mixup', help='to custom output filename')
 parser.add_argument('--device', type=int, default=0, help='cuda device index, if not found, will switch to cpu')
 args = parser.parse_args()
 
@@ -50,14 +50,14 @@ else:
     label2desc = {label:label for label in set(labels)}
 print(label2desc)
 
-if args.sega_model_path is not None:
-    checkpoint = args.sega_model_path
+if args.genius_model_path is not None:
+    checkpoint = args.genius_model_path
 else:
     # checkpoint = '../saved_models/bart-base-c4-realnewslike-4templates-passage-and-sent-max15sents_2-sketch4/checkpoint-215625'
     checkpoint = '../saved_models/bart-large-c4-l_50_200-d_13799838-yake_mask-t_3900800/checkpoint-152375'
     
-print('sega checkpoint:', checkpoint)
-sega = pipeline('text2text-generation', model=checkpoint, device=args.device)
+print('genius checkpoint:', checkpoint)
+genius = pipeline('text2text-generation', model=checkpoint, device=args.device)
 
 
 
@@ -128,7 +128,7 @@ sketch_dataset = List2Dataset(mixup_sketches)
 
 
 print('Generating new samples...')
-for out in tqdm(sega(
+for out in tqdm(genius(
         sketch_dataset, num_beams=3, do_sample=True, 
         num_return_sequences=1, max_length=args.max_length, 
         batch_size=32, truncation=True)):
@@ -146,7 +146,7 @@ augmented_labels = labels + new_labels
 corresponding_sketches = ['ORIGINAL-SAMPLE'] * len(labels) + mixup_sketches
 assert len(augmented_contents) == len(augmented_labels), 'wrong num'
 assert len(augmented_contents) == len(corresponding_sketches), 'wrong num'
-args.output_name = f"segaMix_prompt{args.add_prompt}_asonly_{args.aspect_only}_{args.sega_version}_aug{args.n_aug}"
+args.output_name = f"geniusMix_prompt{args.add_prompt}_asonly_{args.aspect_only}_{args.genius_version}_aug{args.n_aug}"
 augmented_dataset = pd.DataFrame({'content':augmented_contents, 'sketch':corresponding_sketches, 'label':augmented_labels})
 augmented_dataset.to_csv(f'../data_clf/{args.dataset_name}/{args.output_name}.csv')
 
