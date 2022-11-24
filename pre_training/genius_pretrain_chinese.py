@@ -3,7 +3,7 @@ import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.tokenize import sent_tokenize
-import transformers
+from rouge_chinese import Rouge as RougeChinese
 from transformers import BertTokenizer, AutoModel, AutoConfig, AutoModelForSeq2SeqLM
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, DataCollatorForSeq2Seq
 from datasets import load_dataset, load_metric
@@ -52,7 +52,7 @@ tokenized_dataset = dataset_with_sketch['train'].select(random.sample(range(8000
 
 
 # ROUGE metric：
-rouge_score = load_metric("rouge")
+rouge_score = RougeChinese
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred
     # Decode generated summaries into text
@@ -65,11 +65,9 @@ def compute_metrics(eval_pred):
     decoded_preds = ["\n".join(sent_tokenize(pred.strip())) for pred in decoded_preds]
     decoded_labels = ["\n".join(sent_tokenize(label.strip())) for label in decoded_labels]
     # Compute ROUGE scores
-    result = rouge_score.compute(
-        predictions=decoded_preds, references=decoded_labels, use_stemmer=True
-    )
+    result = rouge_score.get_scores(decoded_preds, decoded_labels)
     # Extract the median scores
-    result = {key: value.mid.fmeasure * 100 for key, value in result.items()}
+    result = {key: value['f'] * 100 for key, value in result.items()}
     return {k: round(v, 4) for k, v in result.items()}
 
 

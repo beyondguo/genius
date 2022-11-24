@@ -2,7 +2,7 @@
 
 **基于草稿的文本生成模型**
 
-- **Paper: [GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation](https://github.com/beyondguo/genius/blob/master/GENIUS_gby_arxiv.pdf)**
+- **Paper: [GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation](https://arxiv.org/abs/2211.10330)**
 
 💡**GENIUS** is a powerful conditional text generation model using sketches as input, which can fill in the missing contexts for a given **sketch** (key information consisting of textual spans, phrases, or words, concatenated by mask tokens). GENIUS is pre-trained on a large- scale textual corpus with a novel *reconstruction from sketch* objective using an *extreme and selective masking* strategy, enabling it to generate diverse and high-quality texts given sketches.
 
@@ -121,5 +121,11 @@ Out-of-distribution (OOD) evaluations:
 | **GeniusAug-f** | **76.18** |   66.89   | **77.45** | **80.36** | **75.22** |
 
 ### BibTeX entry and citation info
-TBD
+If you find our paper/code/demo useful, please cite our paper:
+@article{guo2022genius,
+  title={GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation},
+  author={Guo, Biyang and Gong, Yeyun and Shen, Yelong and Han, Songqiao and Huang, Hailiang and Duan, Nan and Chen, Weizhu},
+  journal={arXiv preprint arXiv:2211.10330},
+  year={2022}
+}
 

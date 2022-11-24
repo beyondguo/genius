@@ -27,12 +27,17 @@ class SketchExtractor:
     def __init__(self, model='yake'):
         assert model in ['yake', 'bert','jieba'], '`model` only support `yake`, `bert` or `jieba`'
         self.model = model
+        self.mask = '<mask>'
+        self.sep = ' '
         if model == 'yake': # for English
             self.extractor = None
         if model == 'bert': # for English
             self.extractor = AspectKeyBERT(model='all-MiniLM-L6-v2') # paraphrase-MiniLM-L3-v2 (the fastest LM) all-MiniLM-L6-v2
         if model == 'jieba': # for Chinese
+            print('You are using Chinese version.\n --mask token: "[MASK]"\n--sep:""')
             self.extractor = jieba.analyse
+            self.mask = '[mask]'
+            self.sep = ''
         
 
     def get_kws(self, s, max_ngram=3, top=10, aspect_keywords=None, use_aspect_as_doc_embedding=False):
@@ -48,7 +53,7 @@ class SketchExtractor:
             return [], kws
         return kws_pairs, [p[0] for p in kws_pairs]
 
-    def get_sketch_from_kws(self, s, kws, template=4, mask='<mask>', sep=' '):
+    def get_sketch_from_kws(self, s, kws, template=4):
         """
         TODO: keywords extracted by YAKE may not always be the same as original, like "IBM's" will be "IBM".
               for template 3/4, a workaround is split keywords into single words, then match
@@ -58,6 +63,8 @@ class SketchExtractor:
         3 --> keywords ordered by the original order and frequences in `s`, joint by a single space
         4 --> same as above, but joint by a single <mask> token (the default GENIUS mode)
         """
+        mask = self.mask
+        sep = self.sep
         if template == 1:
             return ' '.join(kws)
         if template == 2:
@@ -113,6 +120,8 @@ class SketchExtractor:
                     masked_text.append(f'{mask}{sep}')
                 if sep == ' ' and id - all_ids[i-1] == 2 and s[id-1] == ' ': # a space in between
                     masked_text.append(' ')
+                if sep == '' and id - all_ids[i-1] == 2:
+                    masked_text.append(f'{sep}{mask}{sep}')
                 if id - all_ids[i-1] > 2: # something in between
                     masked_text.append(f'{sep}{mask}{sep}')
                 masked_text.append(s[id])

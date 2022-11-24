@@ -60,7 +60,7 @@ def add_sketch_to_dataset(examples):
         res['text'].append(p)
         _, kws = sketch_extractor.get_kws(p, top=max(len(jieba.lcut(p))//5,1))
         # we plan to use `fnlp/bart-large-chinese` for pre-training, the mask token is `[MASK]`
-        sketch = sketch_extractor.get_sketch_from_kws(p, kws, mask='[MASK]',sep='')
+        sketch = sketch_extractor.get_sketch_from_kws(p, kws)
         res['sketch'].append(sketch)
     return res
 
