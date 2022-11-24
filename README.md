@@ -4,6 +4,25 @@
 
 - **Paper: [GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation](https://arxiv.org/abs/2211.10330)**
 
+
+<script
+	type="module"
+	src="https://gradio.s3-us-west-2.amazonaws.com/3.10.1/gradio.js"
+></script>
+
+<gradio-app src="https://beyond-genius.hf.space"></gradio-app>
+
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+
+
+<iframe
+	src="https://beyond-genius.hf.space"
+	frameborder="0"
+	width="850"
+	height="450"
+/>
+
+
 💡**GENIUS** is a powerful conditional text generation model using sketches as input, which can fill in the missing contexts for a given **sketch** (key information consisting of textual spans, phrases, or words, concatenated by mask tokens). GENIUS is pre-trained on a large- scale textual corpus with a novel *reconstruction from sketch* objective using an *extreme and selective masking* strategy, enabling it to generate diverse and high-quality texts given sketches.
 
 **Example 1:**
