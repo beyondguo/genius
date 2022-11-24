@@ -122,10 +122,12 @@ Out-of-distribution (OOD) evaluations:
 
 ### BibTeX entry and citation info
 If you find our paper/code/demo useful, please cite our paper:
+```
 @article{guo2022genius,
   title={GENIUS: Sketch-based Language Model Pre-training via Extreme and Selective Masking for Text Generation and Augmentation},
   author={Guo, Biyang and Gong, Yeyun and Shen, Yelong and Han, Songqiao and Huang, Hailiang and Duan, Nan and Chen, Weizhu},
   journal={arXiv preprint arXiv:2211.10330},
   year={2022}
 }
+```
 
